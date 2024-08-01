@@ -15,6 +15,14 @@
       "category": "food",
       "price": 100,
       "createdAt": "2024-07-29T20:46:45.642Z"
+    },
+    {
+      "id": 3,
+      "description": "marketplace - mesa",
+      "type": "income",
+      "category": "VENDA",
+      "price": 350,
+      "createdAt": "2024-08-01T20:46:45.642Z"
     }
   ]
 }
