@@ -10,30 +10,38 @@ import { ArrowCircleDown, ArrowCircleUp, X } from 'phosphor-react'
 import * as z from 'zod'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useContext } from 'react'
+import { TransactionsContext } from '../../contexts/TransactionContext'
 
 const newTransactionFormSchema = z.object({
   description: z.string(),
   price: z.number(),
   category: z.string(),
-  type: z.enum(['income', 'outcome'])
+  type: z.enum(['income', 'outcome']),
 })
 
 type NewTransactionFormInputs = z.infer<typeof newTransactionFormSchema>
 
-
 export function NewTransactionModal() {
+  const { createTransaction } = useContext(TransactionsContext)
+
   const {
     control,
     register,
     handleSubmit,
-    formState: {isSubmitting}
-    
+    formState: { isSubmitting },
+    reset,
   } = useForm<NewTransactionFormInputs>({
-    resolver: zodResolver(newTransactionFormSchema)
+    resolver: zodResolver(newTransactionFormSchema),
+    defaultValues: {
+      type: 'income',
+    },
   })
 
-  function handleCreateNewTransaction(data: NewTransactionFormInputs){
-    console.log(data)
+  async function handleCreateNewTransaction(data: NewTransactionFormInputs) {
+    createTransaction(data)
+
+    reset()
   }
 
   return (
@@ -45,31 +53,34 @@ export function NewTransactionModal() {
           <X size={24} />
         </CloseButton>
         <form action="" onSubmit={handleSubmit(handleCreateNewTransaction)}>
-          <input 
+          <input
             type="text"
             placeholder="Descrição"
             required
             {...register('description')}
           />
-          <input 
+          <input
             type="number"
             placeholder="Preço"
             required
-            {...register('price', {valueAsNumber: true })}
+            {...register('price', { valueAsNumber: true })}
           />
-          <input 
+          <input
             type="text"
             placeholder="Categoria"
             required
             {...register('category')}
           />
 
-          <Controller 
+          <Controller
             control={control}
-            name='type'
-            render={({field})=>{
+            name="type"
+            render={({ field }) => {
               return (
-                <TransactionType onValueChange={field.onChange} value={field.value}>
+                <TransactionType
+                  onValueChange={field.onChange}
+                  value={field.value}
+                >
                   <TransactionTypeButton value="income" variant="income">
                     <ArrowCircleUp size={24} />
                     Entrada
@@ -82,7 +93,9 @@ export function NewTransactionModal() {
               )
             }}
           />
-          <button type="submit" disabled={isSubmitting}>Cadastrar</button>
+          <button type="submit" disabled={isSubmitting}>
+            Cadastrar
+          </button>
         </form>
       </Content>
     </Dialog.Portal>
